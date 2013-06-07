@@ -1,13 +1,13 @@
 ---
 layout: default
-title: BitThunder
+title: BootThunder
 overview: true
 ---
 
 <section class="intro">
   <div class="grid">
     <div class="unit whole center-on-mobiles">
-      <p class="first">The universal kernel.</p>
+      <p class="first">First-class Booting</p>
     </div>
   </div>
 </section>
@@ -16,21 +16,22 @@ overview: true
     <div class="unit one-third">
       <h2>Simple</h2>
       <p>
-        Structured, powerful, and organised framework allows you to concentrate on <em>your application</em>.
+        Simple portable bootloader based on BitThunder, <em>replaces U-Boot, boots Linux</em>!
       </p>
-      <a href="/docs/usage" class="">How BitThunder works &rarr;</a>
+      <a href="/docs/usage" class="">Features &rarr;</a>
     </div>
     <div class="unit one-third">
-      <h2>Robust</h2>
-      <p></p>
-      <a href="/docs/robust" class="">What makes BitThunder robust &rarr;</a>
+      <h2>Flexible</h2>
+      <p>BootThunder provides you the flexibility to layout your system in any way.</p>
+      <a href="/docs/flexibility" class="">Flexibility &rarr;</a>
     </div>
     <div class="unit one-third">
       <h2>Open</h2>
       <p>
-        BitThunder is completely open. Under a liberal BSD license. That encourages changes to be submitted upstream.
+        Of course, BootThunder is completely open under the same liberal license you can expect
+		from BitThunder.
       </p>
-      <a href="/docs/usage-rules" class="">Simple usage rules &rarr;</a>
+      <a href="/docs/usage-rules" class="">Free For All &rarr;</a>
     </div>
     <div class="clear"></div>
   </div>
@@ -41,24 +42,25 @@ overview: true
       <h4>Get up and running <em>in&nbsp;seconds</em>.</h4>
     </div>
     <div class="unit golden-large code">
-      <p class="title">Quick-Build Instructions</p>
+      <p class="title">Boot Linux & Embedded Applications</p>
       <div class="shell">
         <p class="line">
-          <span class="path">~/bitthunder/</span>
+          <span class="path">BootThunder</span>
           <span class="prompt">$</span>
-          <span class="command">make menuconfig</span>
+          <span class="command">load 0x01008000 zImage</span>
         </p>
         <p class="line">
-          <span class="output"># Create a valid configuration for a known BSP.</span>
-        </p>
-        <p class="line">
-          <span class="path">~/bitthunder/</span>
+          <span class="path">BootThunder</span>
           <span class="prompt">$</span>
-          <span class="command">make</span>
+          <span class="command">boot --core 0 0x01008000</span>
         </p>
 		<p class="line">
-		  <span class="output">Program kernel.elf from the bsp folder on the target.</span>
+		  <span class="output">Uncompressing Linux... done.</span>
 		</p>
+		<p class="line">
+		  <span class="output">Booting Linux Kernel</span>
+		</p>
+		<p></p>
       </div>
     </div>
     <div class="clear"></div>
