@@ -1,6 +1,6 @@
 ---
 layout: posts
-title: BitThunder Blog
+title: Blog
 permalink: /blog/home/
 ---
 
@@ -13,3 +13,4 @@ permalink: /blog/home/
   {% endfor %}
 </ul>
 
+<a href="{{ site.url }}/blog/rss.xml">Subscribe with RSS</a>
