@@ -1,0 +1,9 @@
+comment "LD05 Options"
+
+config BSP_DIR
+	   string
+	   default "../bsp/"
+
+config BSP_NAME
+	   string
+	   default "BootThunder"
