@@ -1,0 +1,3 @@
+[submodule "bitthunder"]
+	path = bitthunder
+	url = git://github.com/jameswalmsley/bitthunder.git
