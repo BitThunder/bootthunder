@@ -38,7 +38,7 @@ int main(void) {
 	BT_UartEnable(hUART);
 	BT_SetStandardHandle(hUART);
 
-	BT_kPrint("Bootloader started...");
+	BT_kPrint("BootThunder started...");
 
 	BT_HANDLE hVolume = BT_DeviceOpen("mmc00", &Error);
 	while(!hVolume) {
