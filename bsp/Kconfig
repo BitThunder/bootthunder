@@ -1,4 +1,4 @@
-comment "LD05 Options"
+comment "BootThunder BSP options"
 
 config BSP_DIR
 	   string
