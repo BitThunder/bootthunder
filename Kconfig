@@ -1,1 +1,10 @@
 comment "BootThunder Configuration"
+
+config BOOTTHUNDER_DEPENDENCIES
+	   bool
+	   default	y
+	   select 	SHELL
+	   select 	SHELL_CMD_BOOT
+	   select	SHELL_CMD_BOOT_JTAG
+	   select	SHELL_CMD_LOAD
+	   select	SHELL_CMD_LOAD_FPGA
