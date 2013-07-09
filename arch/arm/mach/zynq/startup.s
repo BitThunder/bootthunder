@@ -7,7 +7,7 @@ _bt_startup_boot:
 	str	r0,[r1]
 	ldr	r0,=0xDEADBEEF
 	bl	ps7_init			@ Run the clock configurator, as exported from Xilinx HW generator.
-	bl 	ps7_post_config
+@	bl 	ps7_post_config
 	b	_bt_start
 .globl _sbrk
 _sbrk:
