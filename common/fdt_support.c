@@ -59,12 +59,21 @@ int fdt_chosen(void *fdt, int force) {
 	const char *path = fdt_getprop(fdt, nodeoffset, "bootargs", NULL);
 	if(!path || force) {
 		if(bAppend) {
-			printf("path = %s\r\n", path);
+			if(path) {
+				printf("path = %s\r\n", path);
+			}
 			BT_u32 total_length = strlen(str);
-			total_length += strlen(path);
+			if(path) {
+				total_length += strlen(path);
+			}
 			char *new_str = BT_kMalloc(total_length + 2);
-			strcpy(new_str, path);
-			strcat(new_str, " ");
+			new_str[0] = '\0';
+
+			if(path) {
+				strcat(new_str, path);
+				strcat(new_str, " ");
+			}
+
 			strcat(new_str, str);
 			str = new_str;
 			printf("new_str = %s\r\n", new_str);
