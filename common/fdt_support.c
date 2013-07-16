@@ -6,6 +6,19 @@
 #include <bootthunder.h>
 #include <libfdt.h>
 
+int fdt_find_and_set(void *fdt, const char *node, const char *prop, const void *val, int len, int create) {
+
+	int nodeoffset = fdt_path_offset(fdt, node);
+	if(nodeoffset < 0) {
+		return nodeoffset;
+	}
+
+	if((!create) && (fdt_get_property(fdt, nodeoffset, prop, NULL) == NULL)) {
+		return 0;
+	}
+
+	return fdt_setprop(fdt, nodeoffset, prop, val, len);
+}
 
 /*
  *
@@ -53,7 +66,7 @@ int fdt_chosen(void *fdt, int force) {
 		bAppend = BT_TRUE;
 		force = 1;
 	}
-	
+
 
 	char *str = bootargs->o.string->s;
 	const char *path = fdt_getprop(fdt, nodeoffset, "bootargs", NULL);
