@@ -40,8 +40,20 @@ int main(void) {
 
 	BT_kPrint("BootThunder started...");
 
+	BT_u32 timeout = 0;
+	while(timeout < 3) {
+		BT_kPrint("Press any key to cancel boot (%d seconds)...\r", timeout++);
+		timeout++;
+		BT_ThreadSleep(1000);
+	}
+
+	timeout = 0;
 	BT_HANDLE hVolume = BT_DeviceOpen("mmc00", &Error);
 	while(!hVolume) {
+		timeout += 5;
+		if(timeout >= 5000) {
+			goto fallback_shell;
+		}
 		BT_ThreadSleep(5);
 		hVolume = BT_DeviceOpen("mmc00", &Error);
 	}
@@ -52,15 +64,38 @@ int main(void) {
 
 	Error = BT_ShellScript("/sd0/boot.cfg");
 	if(Error) {
-		BT_kPrint("No kernel shell script found, jumping to terminal shell");
+		BT_kPrint("Could not open shell script, or shell script failed.");
 	}
 
+fallback_shell:
+
 	// If we got here then script wasn't found, or didn't boot! Create a shell.
-	sprintf(buffer, "boot --core 0 %08x", jtag_loop);
-	BT_ShellCommand(buffer);
+	//sprintf(buffer, "boot --core 0 %08x", jtag_loop);
+	//BT_ShellCommand(buffer);
+
+	BT_kPrint("Starting fallback shell!");
+
+	/*char c;
+	BT_Read(hUART, 0, 1, &c, &Error);*/
 
 	while(1) {
-		BT_ThreadSleep(1000);
+		BT_u32 i = 0;
+
+		bt_printf("BootThunder>");
+
+		do {
+			BT_s32 c = BT_GetC(hUART, 0, &Error);
+			buffer[i] = c;
+
+			if(c == '\r' || c == '\n') {
+				buffer[i] = '\0';
+				break;
+			}
+			BT_PutC(hUART, 0, buffer[i]);
+		} while(++i < 1024);
+
+		BT_PutC(hUART, 0, '\n');
+		BT_ShellCommand(buffer);
 	}
 
 	return 0;
