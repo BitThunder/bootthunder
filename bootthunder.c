@@ -40,6 +40,8 @@ int main(void) {
 
 	BT_kPrint("BootThunder started...");
 
+	signal_booted();
+
 	BT_u32 timeout = 0;
 	while(timeout < 3) {
 		BT_kPrint("Press any key to cancel boot (%d seconds)...\r", timeout++);
@@ -60,9 +62,7 @@ int main(void) {
 
 	BT_Mount(hVolume, "/sd0/");
 
-	signal_booted();
-
-	Error = BT_ShellScript("/sd0/boot.cfg");
+	Error = BT_ShellScript("/sd0/bootthunder.cfg");
 	if(Error) {
 		BT_kPrint("Could not open shell script, or shell script failed.");
 	}
