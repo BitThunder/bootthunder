@@ -94,6 +94,7 @@ fallback_shell:
 			BT_PutC(hUART, 0, buffer[i]);
 		} while(++i < 1024);
 
+		BT_PutC(hUART, 0, '\r');
 		BT_PutC(hUART, 0, '\n');
 		BT_ShellCommand(buffer);
 	}
