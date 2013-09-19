@@ -4,6 +4,9 @@
 #include <bitthunder.h>
 #include <shell/bt_env.h>
 
+#include <common/fdt_support.h>
+#include <common/cmd_bootm.h>
+
 
 #define printf	bt_printf
 
