@@ -43,13 +43,16 @@ int main(void) {
 	signal_booted();
 
 	BT_u32 timeout = 0;
+#ifdef BT_CONFIG_BOOTTHUNDER_TIMEOUT
 	while(timeout < 3) {
 		BT_kPrint("Press any key to cancel boot (%d seconds)...\r", timeout++);
 		timeout++;
 		BT_ThreadSleep(1000);
 	}
+#endif
 
 	timeout = 0;
+
 	BT_HANDLE hVolume = BT_DeviceOpen("mmc00", &Error);
 	while(!hVolume) {
 		timeout += 5;

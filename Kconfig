@@ -1,5 +1,10 @@
 comment "BootThunder Configuration"
 
+config	BOOTTHUNDER_TIMEOUT
+	bool	"Bootloader timeout"
+	default y
+	
+
 config BOOTTHUNDER_DEPENDENCIES
 	   bool
 	   default	y
