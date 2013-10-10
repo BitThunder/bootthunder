@@ -27,13 +27,6 @@ void jtag_loop() {
 
 char buffer[1024];
 
-BT_ERROR loop_thread(BT_HANDLE hThread, void *pParam) {
-	BT_u32 i = 0;
-	while(1) {
-		BT_ThreadSleep(1);
-	}
-}
-
 int main(void) {
 
 	BT_ERROR Error;
@@ -47,15 +40,16 @@ int main(void) {
 
 	BT_kPrint("BootThunder started...");
 
-	BT_THREAD_CONFIG oConfig;
-	oConfig.ulStackDepth = 128;
-	oConfig.ulPriority = 0;
-
-	BT_CreateThread(loop_thread, &oConfig, &Error);
-
 	signal_booted();
 
-	BT_s32 timeout = 0;
+	BT_u32 timeout = 0;
+	while(timeout < 3) {
+		BT_kPrint("Press any key to cancel boot (%d seconds)...\r", timeout++);
+		timeout++;
+		BT_ThreadSleep(1000);
+	}
+
+	timeout = 0;
 	BT_HANDLE hVolume = BT_DeviceOpen("mmc00", &Error);
 	while(!hVolume) {
 		timeout += 5;
@@ -89,19 +83,16 @@ fallback_shell:
 
 	BT_kPrint("Starting fallback shell!");
 
+	/*char c;
+	BT_Read(hUART, 0, 1, &c, &Error);*/
+
 	while(1) {
 		BT_u32 i = 0;
 
 		bt_printf("BootThunder>");
 
 		do {
-			BT_s32 c;
-		repoll:
-			c = BT_GetC(hUART, BT_FILE_NON_BLOCK, &Error);
-			if(c < 0) {
-				BT_ThreadSleep(25);
-				goto repoll;
-			}
+			BT_s32 c = BT_GetC(hUART, 0, &Error);
 			buffer[i] = c;
 
 			if(c == '\r' || c == '\n') {
