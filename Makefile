@@ -6,7 +6,7 @@ all: .config
 	@cp .config bitthunder/.config
 	@$(MAKE) -C bitthunder APP_DIR=$(APP_DIR) APP_CONFIG=y
 
-BOOT.BIN: bsp/kernel.elf
+BOOT.BIN: bsp/bootthunder.elf
 	@bash bootgen.sh
 
 menuconfig:

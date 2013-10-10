@@ -42,17 +42,7 @@ int main(void) {
 
 	signal_booted();
 
-	BT_u32 timeout = 0;
-#ifdef BT_CONFIG_BOOTTHUNDER_TIMEOUT
-	while(timeout < 3) {
-		BT_kPrint("Press any key to cancel boot (%d seconds)...\r", timeout++);
-		timeout++;
-		BT_ThreadSleep(1000);
-	}
-#endif
-
-	timeout = 0;
-
+	BT_s32 timeout = 0;
 	BT_HANDLE hVolume = BT_DeviceOpen("mmc00", &Error);
 	while(!hVolume) {
 		timeout += 5;
@@ -64,6 +54,14 @@ int main(void) {
 	}
 
 	BT_Mount(hVolume, "/sd0/");
+
+	timeout = 2;
+	do {
+		BT_kPrint("Press any key to cancel boot (%d seconds remain)...\r", timeout);
+		BT_ThreadSleep(1000);
+		BT_s32 c = BT_GetC(hUART, BT_FILE_NON_BLOCK, &Error);
+		if(!Error) goto fallback_shell; 
+	} while (--timeout > 0);
 
 	Error = BT_ShellScript("/sd0/bootthunder.cfg");
 	if(Error) {
@@ -77,9 +75,6 @@ fallback_shell:
 	//BT_ShellCommand(buffer);
 
 	BT_kPrint("Starting fallback shell!");
-
-	/*char c;
-	BT_Read(hUART, 0, 1, &c, &Error);*/
 
 	while(1) {
 		BT_u32 i = 0;

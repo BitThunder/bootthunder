@@ -1,0 +1,12 @@
+.cproject
+.project
+BOOT.BIN
+bsp/.config
+bsp/.config.mk
+bsp/bootthunder.elf
+bsp/bootthunder.img
+bsp/bootthunder.list
+bsp/bootthunder.map
+bsp/bootthunder.syms
+bsp/bt_bsp_config.h
+bsp/build/
