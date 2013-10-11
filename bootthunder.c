@@ -31,12 +31,20 @@ int main(void) {
 
 	BT_ERROR Error;
 
-	BT_HANDLE hUART = BT_DeviceOpen("uart1", &Error);
+	BT_HANDLE hUART0 = BT_DeviceOpen("uart0", &Error);
+	uart_config(hUART0);
+	BT_UartEnable(hUART0);
 
-	uart_config(hUART);
+	BT_HANDLE hUART1 = BT_DeviceOpen("uart1", &Error);
+	uart_config(hUART1);
+	BT_UartEnable(hUART1);
 
-	BT_UartEnable(hUART);
-	BT_SetStandardHandle(hUART);
+#if (BT_CONFIG_LIB_PRINTF_SUPPORT_MULTIPLE_STDOUT)
+	BT_AddStandardHandle(hUART0);
+	BT_AddStandardHandle(hUART0);
+#else
+	BT_SetStandardHandle(hUART0);
+#endif
 
 	BT_kPrint("BootThunder started...");
 
@@ -66,7 +74,9 @@ int main(void) {
 	do {
 		BT_kPrint("Press any key to cancel boot (%d seconds remain)...\r", timeout);
 		BT_ThreadSleep(1000);
-		BT_s32 c = BT_GetC(hUART, BT_FILE_NON_BLOCK, &Error);
+		BT_s32 c = BT_GetC(hUART0, BT_FILE_NON_BLOCK, &Error);
+		if(c >= 0) goto fallback_shell;
+		c = BT_GetC(hUART1, BT_FILE_NON_BLOCK, &Error);
 		if(c >= 0) goto fallback_shell;
 	} while (--timeout > 0);
 
@@ -92,18 +102,29 @@ fallback_shell:
 		bt_printf("BootThunder>");
 
 		do {
-			BT_s32 c = BT_GetC(hUART, 0, &Error);
+			BT_s32 c;
+			while(1) {
+				c = BT_GetC(hUART0, BT_FILE_NON_BLOCK, &Error);
+				if(!Error) break;
+				c = BT_GetC(hUART1, BT_FILE_NON_BLOCK, &Error);
+				if(!Error) break;
+				BT_ThreadSleep(1);
+			}
+				
 			buffer[i] = c;
 
 			if(c == '\r' || c == '\n') {
 				buffer[i] = '\0';
 				break;
 			}
-			BT_PutC(hUART, 0, buffer[i]);
+			BT_PutC(hUART0, 0, buffer[i]);
+			BT_PutC(hUART1, 0, buffer[i]);
 		} while(++i < 1024);
 
-		BT_PutC(hUART, 0, '\r');
-		BT_PutC(hUART, 0, '\n');
+		BT_PutC(hUART0, 0, '\r');
+		BT_PutC(hUART0, 0, '\n');
+		BT_PutC(hUART1, 0, '\r');
+		BT_PutC(hUART1, 0, '\n');
 		BT_ShellCommand(buffer);
 	}
 
