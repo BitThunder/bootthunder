@@ -47,12 +47,12 @@ overview: true
         <p class="line">
           <span class="path">BootThunder</span>
           <span class="prompt">$</span>
-          <span class="command">load 0x01008000 zImage</span>
+          <span class="command">load 0x01008000 /media/sd0/zImage</span>
         </p>
         <p class="line">
           <span class="path">BootThunder</span>
           <span class="prompt">$</span>
-          <span class="command">boot --core 0 0x01008000</span>
+          <span class="command">bootm --core ${kernel_core} 0x01008000</span>
         </p>
 		<p class="line">
 		  <span class="output">Uncompressing Linux... done.</span>
