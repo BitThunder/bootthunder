@@ -10,10 +10,12 @@
  *	This command is designed for booting systems which use the Linux kernel
  *	boot-sequence.
  */
-static int cmd_bootm(int argc, char **argv) {
+static int cmd_bootm(BT_HANDLE hShell, int argc, char **argv) {
+
+	BT_HANDLE hStdout = BT_ShellGetStdout(hShell);
 
 	if(argc != 4 && argc != 6) {
-		printf("Usage: %s {--core [coreID]} [start-addr] [initrd-addr | '-'] [fdt-addr | '-']\n", argv[0]);
+		bt_fprintf(hStdout, "Usage: %s {--core [coreID]} [start-addr] [initrd-addr | '-'] [fdt-addr | '-']\n", argv[0]);
 		return -1;
 	}
 
@@ -26,7 +28,7 @@ static int cmd_bootm(int argc, char **argv) {
 	if(argc == 6) {
 		argoffset = 2;
 		if(strcmp(argv[1], "--core")) {
-			printf("Invalid argument %s\n", argv[1]);
+			bt_fprintf(hStdout, "Invalid argument %s\n", argv[1]);
 			return -1;
 		}
 
@@ -46,6 +48,5 @@ static int cmd_bootm(int argc, char **argv) {
 
 BT_SHELL_COMMAND_DEF oCommand = {
 	.szpName 	= "bootm",
-	.eType 		= BT_SHELL_NORMAL_COMMAND,
 	.pfnCommand = cmd_bootm,
 };

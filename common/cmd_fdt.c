@@ -9,13 +9,13 @@
 #include <ctype.h>
 
 
-static void do_usage() {
+static void do_usage(BT_HANDLE hStdout, char *cmd) {
 
 }
 
 static void *g_fdt_addr = NULL;
 
-static int fdt_parse_property(char **values, int count, char **data, int *len, int *bAllocated) {
+static int fdt_parse_property(BT_HANDLE hStdout, char **values, int count, char **data, int *len, int *bAllocated) {
 
 	char *valp = values[0];
 	int stridx = 0;
@@ -44,13 +44,13 @@ static int fdt_parse_property(char **values, int count, char **data, int *len, i
 			*len += 4;
 
 			if((valp - copy) <= 0) {
-				printf("Could not convert \"%s\"\n", copy);
+				bt_fprintf(hStdout, "Could not convert \"%s\"\n", copy);
 				return -1;
 			}
 		}
 
 		if(*valp != '>') {
-			printf("Unexpected character %c\n", *valp);
+			bt_fprintf(hStdout, "Unexpected character %c\n", *valp);
 			return -1;
 		}
 	} else if(values[0][0] == '[') {
@@ -78,7 +78,7 @@ static int fdt_parse_property(char **values, int count, char **data, int *len, i
 		}
 
 		if(*valp != ']') {
-			printf("Unexpected character '%c'\n", *valp);
+			bt_fprintf(hStdout, "Unexpected character '%c'\n", *valp);
 			return -1;
 		}
 
@@ -92,9 +92,12 @@ static int fdt_parse_property(char **values, int count, char **data, int *len, i
 	return 0;
 }
 
-static int fdt_addr(int argc, char **argv) {
+static int fdt_addr(BT_HANDLE hShell, int argc, char **argv) {
+
+	BT_HANDLE hStdout = BT_ShellGetStdout(hShell);
+
 	if(argc != 1) {
-		do_usage();
+		do_usage(hStdout, argv[0]);
 		return -1;
 	}
 
@@ -103,12 +106,13 @@ static int fdt_addr(int argc, char **argv) {
 	return 0;
 }
 
-static int fdt_set(int argc, char **argv) {
+static int fdt_set(BT_HANDLE hShell, int argc, char **argv) {
 
+	BT_HANDLE hStdout = BT_ShellGetStdout(hShell);
 	int retval = 0;
 
 	if(argc < 2) {
-		do_usage();
+		do_usage(hStdout, argv[0]);
 		return -1;
 	}
 
@@ -121,7 +125,7 @@ static int fdt_set(int argc, char **argv) {
 
 	nodeoffset = fdt_path_offset(g_fdt_addr, path);
 	if(nodeoffset < 0) {
-		printf("libfdt: fdt_path_offset() returned %s\n", fdt_strerror(nodeoffset));
+		bt_fprintf(hStdout, "libfdt: fdt_path_offset() returned %s\n", fdt_strerror(nodeoffset));
 		return -1;
 	}
 
@@ -130,9 +134,9 @@ static int fdt_set(int argc, char **argv) {
 	}
 
 	int bAllocated = 0;
-	retval = fdt_parse_property(argv+2, argc-2, &data, &len, &bAllocated);
+	retval = fdt_parse_property(hStdout, argv+2, argc-2, &data, &len, &bAllocated);
 	if(retval < 0) {
-		bt_printf("Error parsing property value string!\n");
+		bt_fprintf(hStdout, "Error parsing property value string!\n");
 		goto err_out;
 	}
 
@@ -150,7 +154,7 @@ err_out:
 
 typedef struct _DISPATCH_TABLE {
 	const char *name;
-	int (*cmd_fn) (int argc, char **argv);
+	int (*cmd_fn) (BT_HANDLE hShell, int argc, char **argv);
 } DISPATCH_TABLE;
 
 static DISPATCH_TABLE g_Dispatch[] = {
@@ -162,9 +166,12 @@ static DISPATCH_TABLE g_Dispatch[] = {
  *	Dispatch to the correct command handler.
  *
  */
-static int cmd_fdt_dispatch(int argc, char **argv) {
+static int cmd_fdt_dispatch(BT_HANDLE hShell, int argc, char **argv) {
+
+	BT_HANDLE hStdout = BT_ShellGetStdout(hShell);
+
 	if(argc < 2) {
-		do_usage();
+		do_usage(hStdout, argv[0]);
 		return -1;
 	}
 
@@ -180,7 +187,7 @@ static int cmd_fdt_dispatch(int argc, char **argv) {
 	}
 
 	if(pCommand) {
-		return pCommand->cmd_fn(argc-2, argv+2);	// Pass arguments after the subcomand.
+		return pCommand->cmd_fn(hShell, argc-2, argv+2);	// Pass arguments after the subcomand.
 	}
 
 	return -1;
@@ -188,6 +195,5 @@ static int cmd_fdt_dispatch(int argc, char **argv) {
 
 BT_SHELL_COMMAND_DEF oCommand = {
 	.szpName 	= "fdt",
-	.eType 		= BT_SHELL_NORMAL_COMMAND,
 	.pfnCommand = cmd_fdt_dispatch,
 };
