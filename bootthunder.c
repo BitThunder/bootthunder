@@ -52,24 +52,31 @@ int main(void) {
 	signal_booted();
 
 	BT_u32 timeout = 0;
-	while(timeout < 3) {
-		BT_kPrint("Press any key to cancel boot (%d seconds)...\r", timeout++);
-		timeout++;
-		BT_ThreadSleep(1000);
-	}
-
-	timeout = 0;
-	BT_HANDLE hVolume = BT_DeviceOpen("mmc00", &Error);
-	while(!hVolume) {
+	
+	BT_HANDLE hVolume00 = BT_DeviceOpen("mmc00", &Error);
+	while(!hVolume00) {
 		timeout += 5;
 		if(timeout >= 5000) {
 			goto fallback_shell;
 		}
 		BT_ThreadSleep(5);
-		hVolume = BT_DeviceOpen("mmc00", &Error);
+		hVolume00 = BT_DeviceOpen("mmc00", &Error);
 	}
 
-	BT_Mount(hVolume, "/sd0/");
+	BT_Mount(hVolume00, "/sd0/");
+
+	timeout = 0;
+	BT_HANDLE hVolume01 = BT_DeviceOpen("mmc01", &Error);
+	while(!hVolume01) {
+		timeout += 5;
+		if(timeout >= 5000) {
+			goto fallback_shell;
+		}
+		BT_ThreadSleep(5);
+		hVolume01 = BT_DeviceOpen("mmc01", &Error);
+	}
+
+	BT_Mount(hVolume01, "/sd1/");
 
 	timeout = 2;
 	do {
@@ -81,7 +88,7 @@ int main(void) {
 		if(c >= 0) goto fallback_shell;
 	} while (--timeout > 0);
 
-	Error = BT_ShellScript("/sd0/bootthunder.cfg");
+	Error = BT_ShellScript(BT_stdsh, "/sd1/bootthunder.cfg");
 	if(Error) {
 		BT_kPrint("Could not open shell script, or shell script failed.");
 	}
