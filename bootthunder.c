@@ -1,4 +1,5 @@
 #include <bitthunder.h>
+#include <bt_config.h>
 #include <lib/putc.h>
 #include <fs/bt_fs.h>
 
