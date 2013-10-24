@@ -1,4 +1,5 @@
 #include <bitthunder.h>
+#include <bt_config.h>
 #include <lib/putc.h>
 #include <fs/bt_fs.h>
 
@@ -40,10 +41,10 @@ int main(void) {
 	BT_UartEnable(hUART1);
 
 #if (BT_CONFIG_LIB_PRINTF_SUPPORT_MULTIPLE_STDOUT)
-	BT_AddStandardHandle(hUART0);
-	BT_AddStandardHandle(hUART0);
+	BT_AddStdout(hUART0);
+	BT_AddStdout(hUART1);
 #else
-	BT_SetStandardHandle(hUART0);
+	BT_SetStdout(hUART1);
 #endif
 
 	BT_kPrint("BootThunder started...");
@@ -93,39 +94,17 @@ fallback_shell:
 
 	BT_kPrint("Starting fallback shell!");
 
-	/*char c;
-	BT_Read(hUART, 0, 1, &c, &Error);*/
+	BT_HANDLE hShell0 = BT_ShellCreate(hUART0, hUART0, "BootThunder>", BT_SHELL_FLAG_NON_BLOCK, NULL);
 
-	while(1) {
-		BT_u32 i = 0;
+	BT_HANDLE hShell1 = BT_ShellCreate(hUART1, hUART1, "BootThunder>", BT_SHELL_FLAG_NON_BLOCK, NULL);
 
-		bt_printf("BootThunder>");
+	while(1)
+	{
+		BT_Shell(hShell0);
 
-		do {
-			BT_s32 c;
-			while(1) {
-				c = BT_GetC(hUART0, BT_FILE_NON_BLOCK, &Error);
-				if(!Error) break;
-				c = BT_GetC(hUART1, BT_FILE_NON_BLOCK, &Error);
-				if(!Error) break;
-				BT_ThreadSleep(1);
-			}
-				
-			buffer[i] = c;
+		BT_Shell(hShell1);
 
-			if(c == '\r' || c == '\n') {
-				buffer[i] = '\0';
-				break;
-			}
-			BT_PutC(hUART0, 0, buffer[i]);
-			BT_PutC(hUART1, 0, buffer[i]);
-		} while(++i < 1024);
-
-		BT_PutC(hUART0, 0, '\r');
-		BT_PutC(hUART0, 0, '\n');
-		BT_PutC(hUART1, 0, '\r');
-		BT_PutC(hUART1, 0, '\n');
-		BT_ShellCommand(buffer);
+		BT_ThreadSleep(1);
 	}
 
 	return 0;
