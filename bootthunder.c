@@ -27,6 +27,13 @@ void jtag_loop() {
 
 char buffer[1024];
 
+BT_ERROR loop_thread(BT_HANDLE hThread, void *pParam) {
+	BT_u32 i = 0;
+	while(1) {
+		BT_ThreadSleep(1);
+	}
+}
+
 int main(void) {
 
 	BT_ERROR Error;
@@ -39,6 +46,12 @@ int main(void) {
 	BT_SetStandardHandle(hUART);
 
 	BT_kPrint("BootThunder started...");
+
+	BT_THREAD_CONFIG oConfig;
+	oConfig.ulStackDepth = 128;
+	oConfig.ulPriority = 0;
+
+	BT_CreateThread(loop_thread, &oConfig, &Error);
 
 	signal_booted();
 
@@ -60,7 +73,7 @@ int main(void) {
 		BT_kPrint("Press any key to cancel boot (%d seconds remain)...\r", timeout);
 		BT_ThreadSleep(1000);
 		BT_s32 c = BT_GetC(hUART, BT_FILE_NON_BLOCK, &Error);
-		if(!Error) goto fallback_shell; 
+		if(c >= 0) goto fallback_shell;
 	} while (--timeout > 0);
 
 	Error = BT_ShellScript("/sd0/bootthunder.cfg");
@@ -82,7 +95,13 @@ fallback_shell:
 		bt_printf("BootThunder>");
 
 		do {
-			BT_s32 c = BT_GetC(hUART, 0, &Error);
+			BT_s32 c;
+		repoll:
+			c = BT_GetC(hUART, BT_FILE_NON_BLOCK, &Error);
+			if(c < 0) {
+				BT_ThreadSleep(25);
+				goto repoll;
+			}
 			buffer[i] = c;
 
 			if(c == '\r' || c == '\n') {
