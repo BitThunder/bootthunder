@@ -88,7 +88,9 @@ int main(void) {
 		if(c >= 0) goto fallback_shell;
 	} while (--timeout > 0);
 
-	Error = BT_ShellScript(BT_stdsh, "/sd1/bootthunder.cfg");
+	BT_HANDLE hShell = BT_ShellCreate(BT_stdin, BT_stdout, "BootThunder>", 0, NULL);
+
+	Error = BT_ShellScript(hShell, "/sd1/bootthunder.cfg");
 	if(Error) {
 		BT_kPrint("Could not open shell script, or shell script failed.");
 	}
