@@ -1,9 +1,33 @@
 comment "BootThunder Configuration"
 
 config	BOOTTHUNDER_TIMEOUT
-	bool	"Bootloader timeout"
-	default y
-	
+	int	"Bootloader timeout (seconds)"
+	default 3
+
+config BOOTTHUNDER_BOOT_VOLUME
+	string "BootThunder boot volume device name"
+	default "mmc00"
+
+config BOOTTHUNDER_BOOT_MOUNTPOINT
+	string "BootThunder boot mountpoint path"
+	default "/sd0/"
+
+config BOOTTHUNDER_BOOT_SCRIPT_PATH
+	string "Bootscript path"
+	default "/sd0/bootthunder.cfg"
+
+config BOOTTHUNDER_SHELL_0_DEVICE
+	string "Device for shell 0"
+	default "uart0"
+
+config BOOTTHUNDER_SHELL_1_ENABLE
+	bool "Shell 1"
+	default n
+
+config BOOTTHUNDER_SHELL_1_DEVICE
+	string "Device for shell 1"
+	default "uart1"
+	depends on BOOTTHUNDER_SHELL_1_ENABLE
 
 config BOOTTHUNDER_DEPENDENCIES
 	   bool
@@ -11,7 +35,18 @@ config BOOTTHUNDER_DEPENDENCIES
 	   select 	SHELL
 	   select 	SHELL_CMD_BOOT
 	   select	SHELL_CMD_BOOT_JTAG
+	   select 	SHELL_CMD_ECHO
+	   select 	SHELL_CMD_GPIO
+	   select	SHELL_CMD_HELP
 	   select	SHELL_CMD_LOAD
 	   select	SHELL_CMD_LOAD_FPGA
+	   select 	SHELL_CMD_SETENV
+	   select 	SHELL_CMD_GETENV
+	   select	SHELL_CMD_ATAGS
 	   select 	SHELL_CMD_SOURCE
 	   select	SHELL_CMD_IOMEM
+	   select 	SHELL_CMD_LS
+	   select 	SHELL_CMD_CAT
+	   select 	SHELL_CMD_TFTP
+	   select 	SHELL_CMD_PS
+	   select 	SHELL_CMD_SLEEP
