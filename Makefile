@@ -6,8 +6,10 @@ all: .config
 	@cp .config bitthunder/.config
 	@$(MAKE) -C bitthunder APP_DIR=$(APP_DIR) APP_CONFIG=y
 
-BOOT.BIN: bsp/bootthunder.elf
-	@bash bootgen.sh
+BOOT.BIN: all
+	@cp $(APP_DIR)bsp/bootthunder.elf bitthunder/arch/arm/mach/zynq/tools/
+	@cd bitthunder/arch/arm/mach/zynq/tools/ && python ./bootgen.py temp.bif
+	@cp bitthunder/arch/arm/mach/zynq/tools/BOOT.BIN $(APP_DIR)
 
 menuconfig:
 	-@cp -f .config bitthunder/.config
@@ -19,3 +21,6 @@ menuconfig:
 
 clean:
 	@$(MAKE) -C bitthunder APP_DIR=$(APP_DIR) APP_CONFIG=y clean
+
+.PHONY: BOOT.BIN
+

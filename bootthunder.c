@@ -50,17 +50,19 @@ int main(void) {
 
 	BT_u32 timeout = 0;
 
-	BT_HANDLE hVolume00 = BT_DeviceOpen(BT_CONFIG_BOOTTHUNDER_BOOT_VOLUME, &Error);
+	BT_HANDLE hVolume00 = BT_Open(BT_CONFIG_BOOTTHUNDER_BOOT_VOLUME, 0, &Error);
 	while(!hVolume00) {
 		timeout += 5;
 		if(timeout >= 5000) {
 			goto fallback_shell;
 		}
 		BT_ThreadSleep(5);
-		hVolume00 = BT_DeviceOpen(BT_CONFIG_BOOTTHUNDER_BOOT_VOLUME, &Error);
+		hVolume00 = BT_Open(BT_CONFIG_BOOTTHUNDER_BOOT_VOLUME, 0, &Error);
 	}
 
-	BT_Mount(hVolume00, BT_CONFIG_BOOTTHUNDER_BOOT_MOUNTPOINT);
+	BT_CloseHandle(hVolume00);
+	
+	BT_Mount(BT_CONFIG_BOOTTHUNDER_BOOT_VOLUME, BT_CONFIG_BOOTTHUNDER_BOOT_MOUNTPOINT, BT_CONFIG_BOOTTHUNDER_BOOT_FILESYSTEM, 0, NULL);
 
 	timeout = BT_CONFIG_BOOTTHUNDER_TIMEOUT;
 	do {
@@ -74,7 +76,7 @@ int main(void) {
 #endif
 	} while (--timeout > 0);
 
-	BT_HANDLE hShell = BT_ShellCreate(BT_stdin, BT_stdout, "BootThunder>", 0, NULL);
+	BT_HANDLE hShell = BT_ShellCreate(BT_GetStdin(), BT_GetStdout(), "BootThunder>", 0, NULL);
 
 	Error = BT_ShellScript(hShell, BT_CONFIG_BOOTTHUNDER_BOOT_SCRIPT_PATH);
 	if(Error) {

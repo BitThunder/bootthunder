@@ -6,7 +6,11 @@ config	BOOTTHUNDER_TIMEOUT
 
 config BOOTTHUNDER_BOOT_VOLUME
 	string "BootThunder boot volume device name"
-	default "mmc00"
+	default "/dev/mmc00"
+
+config BOOTTHUNDER_BOOT_FILESYSTEM
+    string "BootThunder boot filesystem type"
+	default "vfat"
 
 config BOOTTHUNDER_BOOT_MOUNTPOINT
 	string "BootThunder boot mountpoint path"
@@ -47,6 +51,6 @@ config BOOTTHUNDER_DEPENDENCIES
 	   select	SHELL_CMD_IOMEM
 	   select 	SHELL_CMD_LS
 	   select 	SHELL_CMD_CAT
-	   select 	SHELL_CMD_TFTP
+#	   select 	SHELL_CMD_TFTP
 	   select 	SHELL_CMD_PS
 	   select 	SHELL_CMD_SLEEP

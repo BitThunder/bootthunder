@@ -39,4 +39,4 @@ bootthunder.syms: bootthunder.elf
 
 bootthunder.elf: $(OBJECTS)
 	$(Q)$(PRETTY) --dbuild "LD" $(MODULE_NAME) $@
-	$(Q)$(CC) -o $@ -T $(LINKER_SCRIPT) -Wl,-Map=bootthunder.map -Wl,--gc-sections $(OBJECTS) -nostdlib -lc -lgcc
+	$(Q)$(CC) -o $@ -T $(LINKER_SCRIPT) -Wl,-Map=bootthunder.map -Wl,--gc-sections $(OBJECTS) -nostdlib -lc -lgcc 

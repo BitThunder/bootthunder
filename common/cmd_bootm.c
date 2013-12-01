@@ -14,9 +14,21 @@ static int cmd_bootm(BT_HANDLE hShell, int argc, char **argv) {
 
 	BT_HANDLE hStdout = BT_ShellGetStdout(hShell);
 
-	if(argc != 4 && argc != 6) {
+	if(argc != 2 && argc != 4 && argc != 6) {
 		bt_fprintf(hStdout, "Usage: %s {--core [coreID]} [start-addr] [initrd-addr | '-'] [fdt-addr | '-']\n", argv[0]);
+		bt_fprintf(hStdout, "Usage: %s [fit-image address{#config-name}]\n", argv[0]);
 		return -1;
+	}
+
+	if(argc == 2) {
+		char *config = strchr(argv[1], '#');
+		if(config) {
+			*config = '\0';
+			config++;
+		}
+
+		void *addr = (void *) strtoul(argv[1], NULL, 16);
+		return boot_image(hStdout, addr, config);
 	}
 
 	BT_u32 	coreID 		= 0;
